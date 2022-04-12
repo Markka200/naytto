@@ -1,0 +1,4 @@
+repository "näyttö@Organizathion@cloud"
+  path "/"
+    br "/main"
+    co "/main"
