@@ -4,23 +4,25 @@ using UnityEngine;
 using Pathfinding;
 
 
+
 public class enemy : MonoBehaviour
 {
+    [Header("")]
     public GameObject player;
     public GameObject spot;
     public float range = Mathf.Infinity;
     LayerMask mask;
     public GameObject visionpref;
-    public bool VisionHu = true;
+    public bool VisionHu = true;   // vision hukattu
     public double currentduration;
     GameObject VisionPrefObject;
 
+    [Header("shooting // potentially scrapped idea")]
     public bool ShootingSystem = false;
     public float wait = 1;
     bool counting = false;
     Transform localscale;
-    public GameObject CanvasMeter;
-    public float MeterIncrease = 0.2f;
+    
 
     public GameObject bullet;
     public GameObject bulletspawner;
@@ -28,6 +30,15 @@ public class enemy : MonoBehaviour
     public double ShootPause = 2;
     bool shooting = false;
     public double shootduration;
+    [Header("Detection Meter")]
+    public GameObject CanvasMeter;
+    public float MeterIncrease = 0.2f;
+    [Header("Audio settings")]
+    public AudioClip huh;
+    private new AudioSource audio;
+    bool Sounding = false;
+
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +46,8 @@ public class enemy : MonoBehaviour
         mask = LayerMask.GetMask("Wall", "player");
         barrel = bulletspawner.GetComponent<Rigidbody2D>();
         localscale = CanvasMeter.GetComponent<RectTransform>();
+        audio = GetComponent<AudioSource>();
+        
     }
 
     // Update is called once per frame
@@ -46,27 +59,15 @@ public class enemy : MonoBehaviour
         {                                    
             Vector3 dir = player.transform.position - transform.position;           
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;                    
-            transform.rotation = Quaternion.AngleAxis(angle - 90f, Vector3.forward);                    
-
-        }
-        else if(GameObject.Find("Visionpref" + this.name) != null)                      // jos pelaaja on hukattu niin menn‰‰n sen viimeksi n‰hdylle sijainnille (visionpref)
-        {
-            Vector3 dir = VisionPrefObject.transform.position - transform.position;
-            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.AngleAxis(angle - 90f, Vector3.forward);
-        }
-        
-    }
 
-    void VisionFound()
-    {
-                
-            GetComponent<AIDestinationSetter>().target = player.transform;  // vihollinen jahtaa pelaajaa
-            if (GameObject.Find("Visionpref" + this.name) != null)
+            RaycastHit2D PlayerRay = Physics2D.Raycast(transform.position, dir, 20f, mask);
+            if (PlayerRay.collider == null || PlayerRay.collider.name != player.name)
             {
-                GameObject.Destroy(VisionPrefObject);
+                VisionLost();
+
             }
-        VisionHu = false;                                               // eli vanha visioni on poistettu
+
         if (ShootingSystem)
         {
             if (shooting == false)
@@ -81,8 +82,37 @@ public class enemy : MonoBehaviour
         {
             counting = true;
             StartCoroutine(Meter(wait, MeterIncrease));
-            
+
         }
+
+        }
+        else if(GameObject.Find("Visionpref" + this.name) != null)                      // jos pelaaja on hukattu niin menn‰‰n sen viimeksi n‰hdylle sijainnille (visionpref)
+        {
+            Vector3 dir = VisionPrefObject.transform.position - transform.position;
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle - 90f, Vector3.forward);
+        }
+        
+    }
+
+    void VisionFound()
+    {
+        
+        if (Sounding == false)
+        {
+
+            Sounding = true;
+            StartCoroutine(playsound(huh));
+
+        }
+                
+            GetComponent<AIDestinationSetter>().target = player.transform;  // vihollinen jahtaa pelaajaa
+            if (GameObject.Find("Visionpref" + this.name) != null)
+            {
+                GameObject.Destroy(VisionPrefObject);
+            }
+        VisionHu = false;                                               // eli vanha visioni on poistettu
+
     }
     void VisionLost()
     {
@@ -138,14 +168,22 @@ public class enemy : MonoBehaviour
     {
     
         yield return new WaitForSeconds(time);
-        localscale.localScale = new Vector3(localscale.localScale.x + increase, 1, 1); 
+        localscale.localScale = new Vector3(localscale.localScale.x + increase, localscale.localScale.y, localscale.localScale.z); 
         if(localscale.localScale.x >= 16)
         {
-            player.GetComponent<movement>().YouLost();
+            player.GetComponent<player>().YouLost();
         }
         
         counting = false;
        
+    }
+    public IEnumerator playsound(AudioClip soundname)
+    {
+        audio.PlayOneShot(soundname);
+        Debug.Log(soundname);
+        yield return new WaitForSeconds(1.0f);
+        Sounding = false;
+
     }
 
 

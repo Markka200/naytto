@@ -26,7 +26,7 @@ public class lookdirection : MonoBehaviour
         if (collision.gameObject == Enemy.gameObject)
         {
             coll = false;
-            Debug.Log("collider exit");
+            
 
         }
     }

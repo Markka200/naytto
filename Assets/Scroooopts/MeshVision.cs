@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using Pathfinding;
 public class MeshVision : MonoBehaviour
 {
     private Mesh mesh;
@@ -9,11 +9,15 @@ public class MeshVision : MonoBehaviour
     public GameObject enemy;
     private Vector3 origin;
     enemy Enemy;
-    private float fov;
-    private float haluttufov;
+    public float fov = 360;
+    public float haluttufov = 45;   // se kartio
     private float StartingAngle;
-   
-   
+    
+    public int raycount = 400;
+    public float viewdistance = 20f;
+    public float smallviewdistance = 2f;
+
+    bool tased = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,89 +25,82 @@ public class MeshVision : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
         Enemy = enemy.GetComponent<enemy>();
         origin = enemy.transform.position;
-        fov = 360f;
-        haluttufov = 45f;
+                                   
         
       
     }
     private void LateUpdate()
     {
-        origin = enemy.transform.position;
-        setaimdirection(enemy.transform.up );
-
-
-
-        int raycount = 400;
-        float angle = StartingAngle + 90;
-        float angleincrease = fov / raycount;
-        float viewdistance = 20f;
-        float smallviewdistance = 2f;
-        float jakaja = fov / haluttufov;  // 360 / 8 = 45 eli 45 astetta on se iso homma
-        
-
-
-        Vector3[] vertices = new Vector3[raycount + 1 + 1];
-        Vector2[] uv = new Vector2[vertices.Length];
-        int[] triangles = new int[raycount * 3];
-
-        vertices[0] = origin; // origin
-        int vertexindex = 1;
-        int triangelindex = 0;
-        for(int i = 0; i <= raycount; i++)
+        if (!tased)
         {
+            origin = enemy.transform.position;
+            setaimdirection(enemy.transform.up);
+
+
+
+
+            float angle = StartingAngle + 90;
+            float angleincrease = fov / raycount;
+            float jakaja = fov / haluttufov;  // 360 / 45 = 8 eli 45 astetta on se kartio 
+
+
+
+            Vector3[] vertices = new Vector3[raycount + 1 + 1];
+            Vector2[] uv = new Vector2[vertices.Length];
+            int[] triangles = new int[raycount * 3];
+
+            vertices[0] = origin; // origin
+            int vertexindex = 1;
+            int triangelindex = 0;
+            for (int i = 0; i <= raycount; i++)
+            {
 
                 LayerMask mask = LayerMask.GetMask("Wall", "player");
-                Vector3 vertex;       
-            if (i <= (raycount / jakaja))
-            {
-                RaycastHit2D raycastH = Physics2D.Raycast(origin, new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))), viewdistance, mask);
-
-                if (raycastH.collider == null)
+                Vector3 vertex;
+                if (i <= (raycount / jakaja))
                 {
+                    RaycastHit2D raycastH = Physics2D.Raycast(origin, new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))), viewdistance, mask);
 
-                    vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * viewdistance;
+                    if (raycastH.collider == null)
+                    {
+
+                        vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * viewdistance;
+
+                    }
+                    else
+                    {
+
+                        vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * raycastH.distance;
+
+                    }
+                    if (raycastH.collider?.gameObject.layer == LayerMask.NameToLayer("player") && Enemy.GetComponent<enemy>().VisionHu == true) // että pelaaja huomataan
+                    {
+                        Enemy.Invoke("VisionFound", 0);
+                    }
 
                 }
                 else
                 {
+                    RaycastHit2D raycastH = Physics2D.Raycast(origin, new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))), smallviewdistance, mask);
 
-                    vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * raycastH.distance;
+                    if (raycastH.collider == null)
+                    {
 
-                }
-                if (raycastH.collider?.gameObject.layer == LayerMask.NameToLayer("player") && Enemy.GetComponent<enemy>().VisionHu == true) // että pelaaja huomataan
-                {
-                    Enemy.Invoke("VisionFound", 0);
-                }
-                else if (Enemy.GetComponent<enemy>().VisionHu == false)
-                {
-                    Enemy.Invoke("VisionLost", 0);
-                }
-            }
-            else
-            {
-                RaycastHit2D raycastH = Physics2D.Raycast(origin, new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))), smallviewdistance, mask);
+                        vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * smallviewdistance;
 
-                if (raycastH.collider == null)
-                {
+                    }
+                    else
+                    {
 
-                    vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * smallviewdistance;
+                        vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * raycastH.distance;
+
+                    }
+                    if (raycastH.collider?.gameObject.layer == LayerMask.NameToLayer("player") && Enemy.GetComponent<enemy>().VisionHu == true) // että pelaaja huomataan
+                    {
+                        Enemy.Invoke("VisionFound", 0);
+                    }
 
                 }
-                else
-                {
-
-                    vertex = origin + new Vector3(Mathf.Cos(angle * (Mathf.PI / 180f)), Mathf.Sin(angle * (Mathf.PI / 180f))) * raycastH.distance;
-
-                }
-                if (raycastH.collider?.gameObject.layer == LayerMask.NameToLayer("player") && Enemy.GetComponent<enemy>().VisionHu == true) // että pelaaja huomataan
-                {
-                    Enemy.Invoke("VisionFound", 0);
-                }
-                else if (Enemy.GetComponent<enemy>().VisionHu == false)
-                {
-                    Enemy.Invoke("VisionLost", 0);
-                }
-            }
                 vertices[vertexindex] = vertex;
 
                 if (i > 0)
@@ -120,16 +117,18 @@ public class MeshVision : MonoBehaviour
 
                 vertexindex++;
                 angle -= angleincrease;
-            
+
+            }
+
+
+
+
+            mesh.vertices = vertices;
+            mesh.uv = uv;
+            mesh.triangles = triangles;
         }
-
-
         
-
-        mesh.vertices = vertices;
-        mesh.uv = uv;
-        mesh.triangles = triangles;
-
+     
 
 
         // GameObject gameObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
@@ -145,11 +144,22 @@ public class MeshVision : MonoBehaviour
     {
         StartingAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
         if (StartingAngle < 0) {StartingAngle += 360; }
-        StartingAngle = (StartingAngle - (fov / 2f )) - 270 + 22.5f;    
+        StartingAngle = (StartingAngle - (fov / 2f )) - 270 + (haluttufov / 2);    
     }
-  
+    public IEnumerator Tased()
+    {
+        tased = true;
+        GetComponent<MeshRenderer>().enabled = false;
+        GetComponentInChildren<AIPath>().enabled = false;
+        yield return new WaitForSeconds(5.0f);
+
+        GetComponentInChildren<AIPath>().enabled = true;
+        GetComponent<MeshRenderer>().enabled = true;
+        tased = false;
+        
+    }
 
 
 
-   
+
 }

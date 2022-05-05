@@ -6,12 +6,24 @@ EditorUserSettings:
   serializedVersion: 4
   m_ConfigSettings:
     RecentlyUsedSceneGuid-0:
-      value: 5154075f51540a085d57557b13700d441515482c7b2a71322e2f4b63b5b9603b
+      value: 0552035252040a025d560f2647770c444016197a287e27682e2f4c66b7b2656a
       flags: 0
     RecentlyUsedSceneGuid-1:
-      value: 5a0855025c530c0f0c080f2715725e444e4e48787b7971312e714932bab4326f
+      value: 57570500560d50025d0a592142775d44171619282d7b20317c2c4b67b0e1356c
       flags: 0
     RecentlyUsedSceneGuid-2:
+      value: 0552065507535f02580d5b7512760d44454e4b7b7b2c7f322c2d4f67b2b66060
+      flags: 0
+    RecentlyUsedSceneGuid-3:
+      value: 53090c0551505e59540a552341250f44424e1a7e7f7974647a284e32b3b1303a
+      flags: 0
+    RecentlyUsedSceneGuid-4:
+      value: 5a0855025c530c0f0c080f2715725e444e4e48787b7971312e714932bab4326f
+      flags: 0
+    RecentlyUsedSceneGuid-5:
+      value: 5154075f51540a085d57557b13700d441515482c7b2a71322e2f4b63b5b9603b
+      flags: 0
+    RecentlyUsedSceneGuid-6:
       value: 5b520d0503545b0d0c0c0a2715770748154f4d2c7d7d7e627a7d4a35b4e1646a
       flags: 0
     UnityEditor.ShaderGraph.Blackboard:
