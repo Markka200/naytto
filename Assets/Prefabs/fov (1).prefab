@@ -150,12 +150,12 @@ MonoBehaviour:
   currentduration: 0
   ShootingSystem: 0
   wait: 0.03
-  CanvasMeter: {fileID: 0}
-  MeterIncrease: 0.2
   bullet: {fileID: 887013361728055364, guid: 92e84cf70143a574187871f7cd837364, type: 3}
   bulletspawner: {fileID: 5190921681693588071}
   ShootPause: 2
   shootduration: 0
+  CanvasMeter: {fileID: 0}
+  MeterIncrease: 0.2
   huh: {fileID: 8300000, guid: a8a91cf682bd27a4589deb8bc366a4a9, type: 3}
 --- !u!114 &5190921681415731976
 MonoBehaviour:
@@ -702,7 +702,7 @@ MonoBehaviour:
   enemy: {fileID: 5190921680421776949}
   fov: 360
   haluttufov: 45
-  raycount: 400
+  raycount: 900
   viewdistance: 20
   smallviewdistance: 2
 --- !u!1 &5190921682509557331
