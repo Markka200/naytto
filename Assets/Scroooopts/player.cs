@@ -6,7 +6,8 @@ using UnityEngine.Audio;
 public class player : MonoBehaviour
 {
     taser Taser;
-    
+    Animator animator;
+
     [Header("Button Settings")]
     [SerializeField] private Vector2 mousepos;
     Rigidbody2D rb;
@@ -36,6 +37,7 @@ public class player : MonoBehaviour
     {
         audio = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
 
     }
 
@@ -47,7 +49,17 @@ public class player : MonoBehaviour
         movedir.y = Input.GetAxis("Vertical");
         movedir.x = Input.GetAxis("Horizontal");                            // itse se liikkuminen
         rb.velocity = movedir * moveSpeed;
-        // look at mouse
+        if(Mathf.Abs(movedir.x) > Mathf.Abs(movedir.y))
+        {
+            animator.SetFloat("speed", Mathf.Abs(movedir.x));                  // juoksemis animaatoin pyytäminen
+        }
+        else
+        {
+            animator.SetFloat("speed", Mathf.Abs(movedir.y));
+            
+        }
+
+        
         if (tasing == false)
         {
         mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);     // hiirtä kohti katsominen
@@ -75,25 +87,25 @@ public class player : MonoBehaviour
 
         }
     }
-    public IEnumerator TaserM()
+    public IEnumerator TaserM()         // jos taser alueella on vihollinen ja ei ole seinää välissä, niin kutsu vihollisesta taser metodi
     {
         
-        if (Taser.enemy == true && Taser.EnemyCollision.GetComponent<enemy>().VisionHu == true)
+        if (Taser.enemy == true && Taser.EnemyCollision.GetComponent<enemy>().VisionHu == true)                   
         {
             LayerMask mask = LayerMask.GetMask("Enemy", "Wall");
-            RaycastHit2D WallTest = Physics2D.Raycast(transform.position, Taser.EnemyCollision.transform.position - transform.position , 20f, mask);
+            RaycastHit2D WallTest = Physics2D.Raycast(transform.position, Taser.EnemyCollision.transform.position - transform.position , 20f, mask);  // onko seinä välissä
             
             if (WallTest.transform.gameObject == Taser.EnemyCollision)
             {
-                mousepos = Taser.EnemyCollision.transform.position;
-                lightning.GetComponent<LineRenderer>().enabled = true;
+                mousepos = Taser.EnemyCollision.transform.position;                                         // pelaaja pakotetaan katsomaan vihollista
+                lightning.GetComponent<LineRenderer>().enabled = true;                                      // sähkö efekti pelaajan ja vihollisen väliin
                 lightning.GetComponent<LightningBoltScript>().EndObject = Taser.EnemyCollision;
                 lightning.GetComponent<LightningBoltScript>().enabled = true;
-                audio.PlayOneShot(TaserSound);
+                audio.PlayOneShot(TaserSound);                                                              // taser ääni
                 StartCoroutine(Taser.EnemyCollision.GetComponentInParent<MeshVision>().Tased());
-                TaseAmountText.GetComponent<TMPro.TextMeshProUGUI>().text = "Tases left:" + (TaseAmount - 1);
+                TaseAmountText.GetComponent<TMPro.TextMeshProUGUI>().text = "Tases left:" + (TaseAmount - 1);          // Mahdollisten taser käyttöjen vähentäminen
                 TaseAmount += -1;
-                yield return new WaitForSeconds(2.0f);
+                yield return new WaitForSeconds(2.0f);                                                                  
                 lightning.GetComponent<LineRenderer>().enabled = false;
                 lightning.GetComponent<LightningBoltScript>().enabled = false;
                 tasing = false; 
@@ -117,14 +129,14 @@ public class player : MonoBehaviour
     public void YouLost()                                                               // häviäminen
     {
         YouLostObject.SetActive(true);                                                  // UI:n häviämis tavaroiden näyttäminen
-        this.enabled = false;                                // pelaajan liikkumisen poistaminen
+        this.enabled = false;                                                           // pelaajan liikkumisen poistaminen
 
     }
     public void YouWin()
     {
 
 
-        this.enabled = false;
+        this.enabled = false;                                                           // pelaajan liikkumisen poistaminen
     }
 
 

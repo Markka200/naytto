@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class bullet : MonoBehaviour
 {
+
+    
+
     Rigidbody2D rb;
     public float speed = 2;
     public float rotateSpeed = 0.001f;

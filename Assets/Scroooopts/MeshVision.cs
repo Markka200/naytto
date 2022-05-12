@@ -37,7 +37,13 @@ public class MeshVision : MonoBehaviour
             setaimdirection(enemy.transform.up);
 
 
-
+            /* 
+             * Tää script tekee kartio meshin jonka muoto ottaa huomioon
+             * objectit jotka tulevat tielle (raycast)
+             * Tän idea on simuloida vihollisen näkökenttää, eli jos 
+             * pelaaja menee sen sisälle, niin vihollinen alkaa jahtaamaan 
+             * pelaajaa
+             */
 
             float angle = StartingAngle + 90;
             float angleincrease = fov / raycount;
@@ -131,22 +137,15 @@ public class MeshVision : MonoBehaviour
      
 
 
-        // GameObject gameObject = new GameObject("Mesh", typeof(MeshFilter), typeof(MeshRenderer));
-        // gameObject.transform.localScale = new Vector3();
-
-        // gameObject.GetComponent<MeshRenderer>().material= material;
-        // gameObject.GetComponent<MeshFilter>().mesh = mesh;
-        //  gameObject.transform.localScale = new Vector3(1, 1, 1);
-
     }
 
-    public void setaimdirection(Vector3 aimDirection)
+    public void setaimdirection(Vector3 aimDirection)                    // että mesh osottaa sinne mihin vihollinen osoittaa
     {
         StartingAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
         if (StartingAngle < 0) {StartingAngle += 360; }
         StartingAngle = (StartingAngle - (fov / 2f )) - 270 + (haluttufov / 2);    
     }
-    public IEnumerator Tased()
+    public IEnumerator Tased()                                          // kun vihollinen tasetaan, niin se sammuu hetkeksi
     {
         tased = true;
         GetComponent<MeshRenderer>().enabled = false;

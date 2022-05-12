@@ -55,25 +55,25 @@ public class enemy : MonoBehaviour
     {
 
 
-        if (VisionHu == false)                                                           // vihollinen katsoo pelaajaa kohti jos pelaaja on n‰hty
+        if (VisionHu == false)                                                           // vihollinen katsoo pelaajaa kohti jos pelaaja on n‰hty 
         {                                    
             Vector3 dir = player.transform.position - transform.position;           
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;                    
             transform.rotation = Quaternion.AngleAxis(angle - 90f, Vector3.forward);
 
             RaycastHit2D PlayerRay = Physics2D.Raycast(transform.position, dir, 20f, mask);
-            if (PlayerRay.collider == null || PlayerRay.collider.name != player.name)
+            if (PlayerRay.collider == null || PlayerRay.collider.name != player.name)                     // jos vihollisen ja pelaajan v‰liss‰ on sein‰, niin kutsutaan VisionLost()
             {
                 VisionLost();
 
             }
 
-        if (ShootingSystem)
+        if (ShootingSystem)                                                                                                         
         {
             if (shooting == false)
             {
 
-                Debug.Log("shoot");
+                Debug.Log("shoot");                         
                 StartCoroutine(shoot());
                 shooting = true;
             }
@@ -81,7 +81,7 @@ public class enemy : MonoBehaviour
         else if (counting == false)
         {
             counting = true;
-            StartCoroutine(Meter(wait, MeterIncrease));
+            StartCoroutine(Meter(wait, MeterIncrease));                                             //n‰kymis mittari
 
         }
 
@@ -95,14 +95,14 @@ public class enemy : MonoBehaviour
         
     }
 
-    void VisionFound()
+    void VisionFound()                                                        // (MeshVision kutsuu) jos pelaaja n‰hd‰‰n 
     {
         
         if (Sounding == false)
         {
 
             Sounding = true;
-            StartCoroutine(playsound(huh));
+            StartCoroutine(playsound(huh));                             //"huh" ‰‰ni
 
         }
                 
@@ -111,10 +111,10 @@ public class enemy : MonoBehaviour
             {
                 GameObject.Destroy(VisionPrefObject);
             }
-        VisionHu = false;                                               // eli vanha visioni on poistettu
+        VisionHu = false;                                               // eli vanha muistettu paikka, jossa pelaaja n‰htiin on poistettu
 
     }
-    void VisionLost()
+    void VisionLost()                                                               //Jos vihollinen ei n‰e en‰‰n pelaajaa, niin vihollinen menee pelaajan viimeksi n‰htyyn sijaintiin
     {
 
         if (VisionHu == false)
